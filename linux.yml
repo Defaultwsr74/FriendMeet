@@ -1,0 +1,7 @@
+---
+- name: case1
+  hosts: case1
+  tasks:
+  - name: install_mc
+    apt: 
+      name: "mc"
