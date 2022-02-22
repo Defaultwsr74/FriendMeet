@@ -3,5 +3,5 @@
   hosts: case1
   tasks:
   - name: install_mc
-    apt: 
+    dnf: 
       name: "mc"
