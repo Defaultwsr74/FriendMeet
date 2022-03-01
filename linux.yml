@@ -1,7 +1,104 @@
 ---
 - name: case1
-  hosts: case1
+  hosts: web1, web2
+  ignore_errors: yes
+
+
   tasks:
-  - name: install_mc
-    dnf: 
-      name: "mc"
+  - name: .
+    yum: name=yum-utils state=latest
+
+  - name: ..
+    shell: yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+
+  - name: .
+    shell: yum-config-manager --enable docker-ce-nightly
+
+  - name: ..
+    shell: yum-config-manager --enable docker-ce-test
+
+  - name: install docker.
+    yum: name=docker-ce state=latest
+
+  - name: install docker..
+    yum: name=docker-ce-cli state=latest
+
+  - name: install docker...
+    yum: name=containerd.io state=latest
+
+  - name: enable daemon
+    service: name=docker state=started enabled=yes
+
+    # - name: get prokat :)
+    #get_url: url=https://storage.googleapis.com/wscc-cloud-public/responding-app.tar dest=/home/
+
+
+  - name: clear iptables
+    shell: iptables -F
+  
+  - name: 2
+    shell: iptables -X
+
+  - name: docker restart
+    service: name=docker state=restarted
+
+  - name: load prokat to docker
+    shell: cd /home && docker load < responding-app.tar
+
+  - name: create docker network
+    shell: docker network create --driver=bridge --subnet=10.10.100.0/24 app
+
+  - name: postgres :)
+    shell: docker run -d --restart always -p 0.0.0.0:5432:5432 --name=db -e POSTGRES_PASSWORD=secret --net app --ip 10.10.100.10 postgres
+
+  - name: prokat
+    shell: docker run --name app -d --net app --ip 10.10.100.15 --restart always -p 0.0.0.0:5000:5000  responding-app --ad_ip_addr 9.9.9.9  --db_conn_string postgresql://postgres:secret@10.10.100.10:5432/postgres --external_link http://yandex.ru
+
+
+
+- name: case1 part2 nginx
+  hosts: db
+  
+  vars:
+    - nginx0: nginx.conf     
+    - cert1: cert.crt
+    - cert2: cert.key
+    - nginx1: /etc/nginx/nginx.conf
+    - nginx2: /etc/nginx/
+
+  tasks:
+  - name: install nginx
+    dnf: name=nginx state=latest
+
+  - name: copy nginx.conf
+    copy: src={{ nginx0 }} dest={{ nginx1 }}
+
+  - name: copy crt
+    copy: src={{ cert1 }} dest={{ nginx2 }}
+
+  - name: copy key
+    copy: src={{ cert2 }} dest={{ nginx2 }}
+
+  - name: restart nginx
+    service: name=nginx state=restarted
+
+  - name: enable nginx
+    service: name=nginx state=started enabled=yes
+
+- name: case1 part3 ntp
+  hosts: case1
+
+  vars:
+    - chrony: chrony.conf
+
+  tasks:
+  - name: install chrony
+    yum: name=chrony state=latest
+
+  - name: copy config
+    copy: src={{ chrony }} dest={{ /etc/ }}
+
+  - name: restart chrony
+    service: name=chrony state=restarted enabled=yes
+
+

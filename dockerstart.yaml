@@ -1,0 +1,13 @@
+---
+- name: case1
+  hosts: web1, web2
+  
+  tasks:
+  - name: postgres :)
+    shell: docker run -d --restart always -p 0.0.0.0:5432:5432 --name=db -e POSTGRES_PASSWORD=secret --net app --ip 10.10.100.10 postgres
+
+  - name: prokat :(
+    shell: docker run --name app --net app --ip 10.10.100.15 -d --restart always -p 0.0.0.0:5000:5000  responding-app --ad_ip_addr 9.9.9.9  --db_conn_string postgresql://postgres:secret@10.10.100.10:5432/postgres  --external_link http://yandex.ru
+
+
+

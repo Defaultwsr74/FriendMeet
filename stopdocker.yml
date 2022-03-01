@@ -1,0 +1,18 @@
+---
+- name: case1
+  hosts: web1, web2
+
+  tasks:
+  - name: postgres :)
+    shell: docker stop db 
+
+  - name: postgres :)
+    shell: docker rm db
+
+  - name: prokat :(
+    shell: docker stop app
+
+  - name: prokat :[
+    shell: docker rm app
+
+
