@@ -27,3 +27,4 @@ ansible-playbook cisco.yml
 # Запуск Ansible playbook для развертывания конфигурации, сценария автоматизации 1
 ansible-playbook linux.yml
 ```
+# almet_filin
